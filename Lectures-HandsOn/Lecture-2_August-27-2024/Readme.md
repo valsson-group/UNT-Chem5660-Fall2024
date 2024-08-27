@@ -188,13 +188,27 @@ Now, you might observe that the run did not finish correctly. That is because th
 
 Once the calculation has finished, you can use visualize the results by using either GaussView that is started by using the `gv6` command or ChimeraX that is started using the `ChimeraX`. For example, you can look at how the geometry changes during the optimization and how the energy goes down, and you can also look at the molecular orbitals. This will be shown in the class. 
 
-You can extract the final geometry using the `get_g16_co` script
+You can also use the molden code to look at the geometrical optimization:
+```
+molden Tyrosine_b3lyp_cc-pvdz_opt.log
+```
 
+You can extract the final geometry using the `get_g16_co` script:
 ```
 get_g16_co Tyrosine_b3lyp_cc-pvdz_opt.log
 ```
 
-Then, you should do the same calculation for L-Tryptophan. You should get the initial coordinates by using a smiles string from Pubchem. You can use the Jupyter notebook shown in class to do this. Make sure that this inital geometry looks resonable. Here you need to copy and edit the previously used input file. 
+This will create a file named `outcoo.xyz` that has the XYZ coordinates (in units of Angstrom) for the final geometry. Here, we will rename this file so that it has the same prefix name as the input file 
+```
+mv outcoo.xyz Tyrosine_b3lyp_cc-pvdz_opt.final.xyz
+```
+You can then look at this geometry using molden:
+```
+Tyrosine_b3lyp_cc-pvdz_opt.final.xyz
+```
+We can then use this geometry for further calculations. 
+
+Now, you should do the same calculation for L-Tryptophan. You should get the initial coordinates by using a smiles string from Pubchem. You can use the Jupyter notebook shown in class to do this. Make sure that this inital geometry looks resonable. Here you need to copy and edit the previously used input file. 
 
 
 
