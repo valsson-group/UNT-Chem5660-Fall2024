@@ -1,8 +1,12 @@
-# Lecture 2 / August 27, 2024
+# Lecture 2 - First steps in using cruntch4 to run calculations
 
-## First steps in using cruntch4 to run calculations
+August 27, 2024 
 
-Cruntch4 is the high-performance cluster run by Center for Advanced Scientific Computing and Modeling (CASCaM) and UNT Chemistry department, which we will use throughout the course to run our calculations. Cruntch4 has a Linux-based operating system and uses [slurm](https://slurm.schedmd.com/quickstart.html) to manage the submission of calculations of jobs. 
+## Cruntch4
+
+Cruntch4 is the high-performance cluster run by Center for Advanced Scientific Computing and Modeling (CASCaM) and UNT Chemistry department, which we will use throughout the course to run our calculations. You have been provided with an user account that you should use for this course. 
+
+Cruntch4 has a Linux-based operating system and uses [slurm](https://slurm.schedmd.com/quickstart.html) to manage the submission of calculations of jobs. 
 
 ### Connecting to cruntch4
 
@@ -36,10 +40,14 @@ Some basic commands:
 - `cp <FILENAME> <NEW FILENAME>` - to copy a file to another.
 - `cp -r <FOLDER> <NEW FOLDER>` - to copy a folder to another.
 - `mv <FILENAME> <NEW FILENAME>` - move/rename a file/folder.
+- `cp <PATH> .` - copy file from `<PATH>` to the current folder.
+- `cp -r <PATH-TO-FOLDER> .` - copy folder from `<PATH-TO-FOLDER>` to the current folder.
+- `rm <FILE>` - delete a file.
+- `rm -r <FOLDER>` - delete a folder.
 
 Note: please do not use spaces in file and folder names.
 
-## Editing files
+### Editing files
 
 To edit files, you need to use a terminal editor such as vim that is started by using the command `vi`. 
 
@@ -59,45 +67,32 @@ To edit files, you need to use a terminal editor such as vim that is started by 
 
 This [vi cheat sheet](https://www.atmos.albany.edu/daes/atmclasses/atm350/vi_cheat_sheet.pdf) will come in handy. 
 
-## Folder structure for Gaussian runs
+### Submitting and running Gaussian jobs 
 
-You should create a new folder called `gaussian-runs` to keep all Gaussian runs for the course. You should also create a sub-folder in that folder for each lecture, system, or project, as you see relevant and helpful to keep an organized structure. 
-
-## Submitting and running Gaussian jobs 
-
-You have two options to submit a Gaussian input file for calculation on cruntch4: (1) use the `g16` that is a wrapper for submitting jobs, or (2) use a submission file. 
-
-### Making use of all the CPU cores
-
-Each calculation node in the `compchem.36` queue on cruntch4 has 36 CPU cores. To make use of all 36 CPU cores, it is critical to include the `%nprocshared=36` keyword in the top of the input file, so that the first few lines look something like
-```
-%chk=bz_scan_b3lyp.chk
-%nprocshared=36
-# OPT(ModRedundant) B3LYP/cc-pvDZ
-```
-
-This keyword is not added by default by GaussView, so you normally need to add it yourself if you create the input file with GaussView. 
-
-### Submitting using the g16 wrapper command
-
-The first option is to use the `g16` command which is a wrapper to submit Gaussian job for calculation
+To submit Gaussian jobs, we will make use of a `g16` command which is a wrapper to submit Gaussian jobs for calculations
 
 ```
 [compchemin@cruntch4a ~]$ g16
 
 Arguments:
-            -p Partition: share.36 or share.64. Default value is based on the number of cores
-            -c Cores: Maximum of 36 for share.36 or 64 for share.64. Default value is read from the input file (test.gjf or test.com in examples below)
-            -m Memory: Maximum of 192gb for share.36 or 1024gb for share.64. Default value is read from the input file
+            -p Partition: short.36, long.36 or share.64. Default value is based on the number of cores
+            -c Cores: Maximum of 36 for short.36 and long.36, or 64 for share.64. Default value is read from the input file (test.gjf or test.com in examples below)
+            -m Memory: Maximum of 192gb for short.36 and long.36 or 1024gb for share.64. Default value is read from the input file
             -s Scratch directory: local [/storage/local_scr/compchemin on compute node] or network [/storage/nas_scr/compchemin (default)]
+            -d Duration: Time duration of the job in hh:mm:ss format (default = 72:00:00)
             -t yes or no(default). Terminate after creating the slurm job submission script
             -h Help
+
 Usage Examples:
-             g16 -i test.gjf -p share.36 -c 8 -m 16gb -s network -t yes
-             g16 -i test.com (Using default values of partition, cores, memory, scratch directory and terminate arguments)
+             g16 -i test.gjf -p short.36 -c 8 -m 16gb -s network -d 12:00:00 -t yes
+             g16 -i test.com (Using default values of partition, cores, memory, scratch directory, time duration and terminate arguments)
 Please note:
              A symlink pointing to the temporary job directory is created automatically inside the job submission directory
              No symlink is created if job submission directory = /storage/nas_scr/compchemin and scratch directory = network
+Post Processing:
+	     Geometry optimization: Type get_g16_co test.log to save the output coordinates and final energy to outcoo.xyz file
+	     Frequency calculation: Type g16_fre_cor -h for instructions to correct frequencies which are unphyiscally low as
+	     a result of improper treatment with the Quasiharmonic Oscillator Approximation
 
 ```
 
@@ -109,39 +104,62 @@ You can monitor the job by using the `squeue` command.
 
 In this example, we are submitting a job to the `compchem.36` queue on cruntch4 (the `-p compchem.36` flag). The `-s local` flag specifies that the calculations are performed on a scratch/temporary folder on the local disk of the node. The checkpoint and output files are copied over to the folder from where the calculation is submitted once it is over. During the calculation, a symbolic link is created to this scratch/temporary folder so you can monitor the progress of the calculation. This folder has the name `slurm_####` where `####` is the job-id. 
 
+## First Steps
 
-### Submitting using a submission file
+### Some initial setups
 
-The second option is to use a slurm submission file. You can copy such a submission file to the current folder by using the following command:
-```
-cp /storage/nas_scr/shared/groups/compchem-chem5600/gaussian-files/gaussian-g16.sub . 
-```
+We start by making some changes to a hidden file that controls some settings related to the bash shell. 
 
-In that file, you need to give the filename of the Gaussian input file in the current part of the submission file:
+Start by opening the file `.bashrc` that is in the home folder using `vi`
+
 ```
-# Here you should specfiy the name of
-# the Gaussian input file that are run.
-# You can specify more than one file and
-# they will then be run in batch.
-Jobs="
-<FILENAME>.gjf
-"
+vi  ~/.bashrc
 ```
 
-Then you can submit the calculation by using the `sbatch` command 
+Here is `~/` a shortcut for the full path to the home folder.  
+
+Go to the end of this file by using the down arrow key and go into insert mode by pressing the `i` key. Then add the following as a new line at the end of the file
+
 ```
-sbatch gaussian-g16.sub
+alias rm="rm -i"
 ```
 
-You can monitor the job by using the `squeue` command. 
+This will create an "alias" for the `rm` command so it will always ask you if you are sure if want to delete a file or a folder. To bypass this, you can use the `-f` flag on the `rm` command. 
 
-### Reading checkpoint files from cruntch4 on Windows workstations
+Then go out of vi insert mode by pressing the Escape key, and save the file by using `:w` and then quit using the `:q` in command mode. If you make a mistake, you can always exit without saving by using the `:q!` command. 
 
-The checkpoint files `<FILENAME>.chk` is a binary file where the format is not compatible between Linux and Windows computers. Thus, if you want to read the results from a checkpoint file generated by calculation on cruntch4 on the Windows workstations in CCIL, you need to generate a formatted checkpoint file using the `formchk` command:
+You should now log off from cruntch4 and log on again to activate these changes. Once you have logged on again, you can check if the alias is active by using the `alias` command
+
+### Folder Structure
+
+You should keep an organized structure of folder and file names. For example, it is a good practice to have a sub-folder for each lecture, system, or project, as you see relevant and helpful to keep an organized structure.
+
+**Note: please do not use spaces in file and folder names. Also, file and folder names are case sensitive on Linux**
+
+You should start by creating a new folder called `Runs` in your home folder to keep all runs for the course. You can do that by the following command
+
 ```
-formchk -3 <FILENAME>.chk <FILENAME>.fchk 
+mkdir Runs
 ```
-The resulting `<FILENAME>.fchk` can then be read by GaussView. See further information in the [Gaussian manual](https://gaussian.com/formchk/).
+
+and then you can go to that folder by using the `cd` command
+
+```
+cd Runs
+```
+
+You can use the `pwd` to see the full path to the current folder
+
+Let us then also create a sub-folder in `Runs` for today's lecture
+
+```
+mkdir Lecture-2_August-27-2024
+```
+
+then go to that folder.
+
+### Submitting your first Gaussian calculation 
+
 
 
 ## Tasks 
