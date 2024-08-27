@@ -186,7 +186,7 @@ This will run a calculation using 9 cores (each node has 36 cores, so using more
 
 Now, you might observe that the run did not finish correctly. That is because there is an error in the format of the Gaussian input file. Figure out the issue and re-submit the calculation. Using 9 core, the calculation should take around 3-4 minutes.  
 
-Once the calculation has finished, you can use visualize the results by using either GaussView that is started by using the `g16` command or ChimeraX that is started using the `ChimeraX`. For example, you can look at how the geometry changes during the optimization and how the energy goes down, and you can also look at the molecular orbitals. This will be shown in the class. 
+Once the calculation has finished, you can use visualize the results by using either GaussView that is started by using the `gv6` command or ChimeraX that is started using the `ChimeraX`. For example, you can look at how the geometry changes during the optimization and how the energy goes down, and you can also look at the molecular orbitals. This will be shown in the class. 
 
 You can extract the final geometry using the `get_g16_co` script
 
