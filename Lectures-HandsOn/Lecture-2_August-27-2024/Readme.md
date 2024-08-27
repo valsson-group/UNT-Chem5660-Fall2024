@@ -158,14 +158,43 @@ mkdir Lecture-2_August-27-2024
 
 then go to that folder.
 
-### Submitting your first Gaussian calculation 
+then go to that folder. 
+
+Then go back to the home folder by either using `cd ..` twice or by using the `cd ~` command. Make sure you are in the home folder by using the `pwd` command. 
+
+### Submitting your first Gaussian calculations 
+
+Now go back to the folder you have created for the runs for this lecture. 
+
+We will do a simple DFT geometrical optimization on a [Tyrosine](https://pubchem.ncbi.nlm.nih.gov/compound/Tyrosine) molecule. 
+
+You should copy the input file from the shared folder for the course using the following command:
+
+```
+cp /storage/nas_scr/shared/groups/compchem-chem5600/Lectures-2024/Lecture-2_August-27-2024/Tyrosine_b3lyp_cc-pvdz_opt.gjf . 
+```
+
+Please use either `cat` or `vi` to look at this input file. 
+
+You should then submit the file using the `g16` wrapper using the following command
+
+```
+g16 -i Tyrosine_b3lyp_cc-pvdz_opt.gjf -p compchem.36 -c 9 -m 16gb -s local
+```
+
+This will run a calculation using 9 cores (each node has 36 cores, so using more than 36 will not work). You can check that the calculation is running using the `squeue` commands. 
+
+Now, you might observe that the run did not finish correctly. That is because there is an error in the format of the Gaussian input file. Figure out the issue and re-submit the calculation. Using 9 core, the calculation should take around 3-4 minutes.  
+
+Once the calculation has finished, you can use visualize the results by using either GaussView that is started by using the `g16` command or ChimeraX that is started using the `ChimeraX`. For example, you can look at how the geometry changes during the optimization and how the energy goes down, and you can also look at the molecular orbitals. This will be shown in the class. 
+
+You can extract the final geometry using the `get_g16_co` script
+
+```
+get_g16_co Tyrosine_b3lyp_cc-pvdz_opt.log
+```
+
+Then, you should do the same calculation for L-Tryptophan. You should get the initial coordinates by using a smiles string from Pubchem. You can use the Jupyter notebook shown in class to do this. Make sure that this inital geometry looks resonable. Here you need to copy and edit the previously used input file. 
 
 
 
-## Tasks 
-
-- Download the [`Tyrosine_b3lyp_cc-pvdz_opt.gjf`](https://github.com/valsson-group/UNT-Chem5660-Fall2023/blob/main/Gaussian-on-cruntch4/Tyrosine_b3lyp_cc-pvdz_opt.gjf) file onto your workstation and upload it to a cruntch4 using MobaXterm.
-- Submit this file for calculation.
-- Open GaussView using the `gv6` command on cruntch4. 
-- Open the output file using GaussView and look at the HOMO and LUMO. You can also download the output files to your workstations and look at the output file using the local version of GaussView.
-- Now do a calculation for L-Tryptophan where you should get the initial coordinates by using a smiles string from Pubchem. Here you need to copy and edit the previously used input file. 
