@@ -41,10 +41,9 @@ Make sure that you also change the `%chk=` keyword so it fits with the filename 
 if you use the filename I suggested. 
 
 
-You will now need to submit the calculation using the `g16` wrapper discussed in last lecture. 
+You will now need to submit the calculation using the `g16` wrapper discussed in last lecture. I would suggest to use only 4 cores for the calculation (`-c 4`)
 
-Once the calculation has finished, obtain the following information from the output file, either by opening with `vi` or by using GaussView. 
-
+Once the calculation has finished, obtain the following information from the output file, either by opening with `vi` or by using GaussView:
 - How many SCF iteration did it take to converge the HF calculation?
 - What is the total energy of the molecule? (Important to note what are the units)
 - What are the energies of the HOMO and LUMO?
@@ -58,7 +57,7 @@ A tutorial for ORCA 6 can be found [here](https://www.faccts.de/docs/orca/6.0/tu
 
 For today, we want to do a HF single point calculations, which is discussed in [this tutorial](https://www.faccts.de/docs/orca/6.0/tutorials/prop/single_point.html). The first example in this tutorial shows how to do a HF calculation. 
 
-Create an ORCA input file for doing a HF/cc-pvdz calculation on the same L-Tryptophan geometry as you did using Gaussian. I would suggest to use the filename `L-Tryptophan_hf_cc-pvdz_geo_b3lyp_cc-pvdz_orca.inp
+Create an ORCA input file for doing a HF/cc-pvdz calculation on the same L-Tryptophan geometry as you did using Gaussian. I would suggest to use the filename `L-Tryptophan_hf_cc-pvdz_geo_b3lyp_cc-pvdz_orca.inp` for the input file. 
 
 The format of the input file should be something like this:
 ```
@@ -69,5 +68,21 @@ The format of the input file should be something like this:
 ```
 
 You can then submit the orca input file using the `orca` wrapper that works in similar way as the `g16` wrapper. The main difference is that you will need to specify the version. 
+```
+orca -i L-Tryptophan_hf_cc-pvdz_geo_b3lyp_cc-pvdz_orca.inp -p compchem.36 -c 4 -m 16gb -s local -v 6.0.0 
+```
+You can look at the molecular orbtials from the ORCA 6 calculation using the ChimeraX program that is started using the `ChimeraX`. 
+
+Once the calculation has finished, obtain the following information from the output file:
+- How many SCF iteration did it take to converge the HF calculation?
+- What is the total energy of the molecule? (Important to note what are the units)
+- What are the energies of the HOMO and LUMO?
+- What is the HOMO-LUMO gap in eV?
+- How does this compare to Gaussian calculation.
+
+
+
+
+
 
 
