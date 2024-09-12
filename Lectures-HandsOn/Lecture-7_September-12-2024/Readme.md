@@ -21,7 +21,7 @@ Always use descriptive filenames for your input files so that it is clear which 
 #### Calculation not run correctly
 Once a submitted calculation has finished, you must always open the output file (ORCA: `.out` extension / Gaussian: `.log` extension) and check that the calculation has finished correctly (you can go at the end of the output file in `vi` by using the `shift+g` key combination). 
 
-If the calculation does not seem to run correctly, you should inspect the error message at the end of the calculation and try to understand that. In most case, this is due to some error in your input file. Thus, you should look at the input file and make sure it is the right format. Note that the format is different between ORCA and Gaussian. 
+If the calculation does not run correctly, you should inspect the error message at the end of the calculation and try to understand why the run did not run correctly. In most cases, the run error is due to some error in your input file. Thus, you should look at the input file and make sure it is the right format. Note that the format is different between ORCA and Gaussian. 
 
 For ORCA 6, the [manual](https://www.faccts.de/docs/orca/6.0/manual/index.html) and [tutorial](https://www.faccts.de/docs/orca/6.0/tutorials/index.html) are helpful to understand how the input file should be structured
 - [4. General Structure of the Input File](https://www.faccts.de/docs/orca/6.0/manual/contents/structure.html)
@@ -37,9 +37,9 @@ cp Hexatriene_OptGeo_HF_cc-pvdz.inp Hexatriene_OptGeo_<DFT-FUNCTIONAL>_cc-pvdz.i
 where `<DFT-FUNCTIONAL>` is the DFT functionals you are considering (`B3LYP`, `B3LYP-D3`, etc). Then you can edit that input file to change the method used for the calculation. 
 
 You can consider the following DFT functionals: 
-- BLYP
-- B3LYP
-- PBE0
+- BLYP (GGA functional)
+- B3LYP (hybrid GGA functional)
+- PBE0 (hybrid GGA functional)
 - B3LYP-D3 (with D3 dispersion correction)
 - B3LYP-D4 (with D4 dispersion correction)
 - B2PLYP (double hybrid)
