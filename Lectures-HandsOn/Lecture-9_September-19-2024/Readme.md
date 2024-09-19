@@ -1,8 +1,8 @@
-# Lecture 8 - Assignment 2 
+# Lecture 9 - Continuing Assignment 2
 
-September 17, 2024 
+September 19, 2024 
 
-In today's lecture, you should start working on Assignment 2, which has been posted on Canvas. 
+In today's lecture, you should continue working on Assignment 2 
 
 You can perform the calculation using either Gaussian 16 or ORCA 6, it is up to you which code you use. 
 
