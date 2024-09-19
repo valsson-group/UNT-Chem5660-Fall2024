@@ -4,64 +4,36 @@ September 19, 2024
 
 In today's lecture, you should continue working on Assignment 2 
 
-You can perform the calculation using either Gaussian 16 or ORCA 6, it is up to you which code you use. 
+### Extracting the relaxed surface scan results from Gaussian
 
-#### Initial Geometry
-You can fetch the initial geometry for the Benzamidine molecule at the following path:
+To extract the results of the relaxed surface scan from Gaussian, you should open the `<FILENAME>.log` using GaussView, and select the Results=>Scan option in the menubar. This will open an window with the results. Here, you can manipulate the date, for example aligning the lowest energy point to zero and changing units. You can then save the data to a text file that you can use for plotting in another program. This will be shown in class. 
+
+### Extracting the relaxed surface scan results from ORCA 
+
+It is much easier to extract the results with ORCA as the code will give out a data file in a text format called `<FILENAME>.relaxscanact.dat` with the results. You can then take this data file and plot the results in another code. 
+
+**Note, please make sure that you use the `<FILENAME>.relaxscanact.dat` for the analysis as this data file includes the actual energies.** 
+
+There is also another file (`<FILENAME>.relaxscanscf.dat`) that contains the pure SCF energy. For HF and DFT without dispersion correction, these two files are the same, but for DFT with dispersion correction and post-HF methods such as MP2, the energies will be different. 
+
+### Plotting the results 
+
+To plot the scan results, you can use whatever software you prefer. One option is to use Python with Numpy and Matplotlib, and I have prepared a [Juypter Notebook](https://colab.research.google.com/github/valsson-group/UNT-Chem5660-Fall2024/blob/main/Python-PlotDihedralData/PlotDihedralData.ipynb) that shows how you can do that. I will do a demonstration in class on how to use this notebook. 
+
+Whatever software you use to make the figures, you must ensure that:
+- That the lowest energy point of each calculation setup is aligned to be at zero
+- That the energy value are given in kJ/mol or kcal/mol, based on your preference
+- The x- and y-axis are appropriately labeled
+- The x- and y-axis have the appropriate units
+- That each line has a different color and is labelled in a legend 
+
+### Performing a relaxed surface scan using MP2 in ORCA 
+
+ORCA has various options to improve the performance, see [tutorial](https://www.faccts.de/docs/orca/6.0/tutorials/prop/single_point.html). For MP2 calculations, you should make use of the resolution of the identity (RI) approximation that can significantly speed-up the calculations without a loss in accuracy. To active this approxiartion, you must use the `RI-MP2`
 ```
-/storage/nas_scr/shared/groups/compchem-chem5600/Assignments/Assignment-2/Benzamidine_Initial.xyz
+! RI-MP2 cc-pVDZ cc-pVDZ/C OPT TightOPT
 ```
-Once you have copied the file to your folder for Assignment 2, you should look at the molecule using `molden` to make sure it corresponds to the right structure. 
-
-You should also decide which atoms you will use to define the dihedral angle. 
-
-### Performing a relaxed surface scan using Gaussian 
-
-To perform a relaxed surface scan using Gaussian, you should use the `modredundant` keyword, see manual for the [opt keyword](https://gaussian.com/opt/)
-
-```
-# opt=(modredundant,tight) B3LYP/cc-pVTZ 
-
-Comment 
-
-0 1
- C                 -2.39370855    0.56987742    0.26335598
- ....
- H                 -2.95812752    3.76327281   -0.74600869
- H                 -4.16866900    1.67069351   -0.23266749
-
-D N1 N2 N3 N4 S 36 10.000000
-
-```
-Where `D N1 N2 N3 N4 S 36 10.000000`, we define the dihedral angle by the fours atoms `N1 N2 N3 N4` and ask for a scan of this angle where the angle is fixed and all other degrees of freedom are relaxed. Here, we ask for a scan for 36 points, each separated by 10 degrees. 
-
-You can also use GaussView to set this up. 
-
-### Performing a relaxed surface scan using ORCA  
-
-To perform a relaxed surface energy scan using ORCA, you need to add a `geom` block with the `scan` keyword to your input file, see [the manual](https://www.faccts.de/docs/orca/6.0/manual/contents/typical/optimizations.html#relaxed-surface-scans)
-
-```
-%geom
- scan
-  D N1 N2 N3 N4 = INITAL_VALUE, FINAL_VALUE, NUMBER_OF_POINTS
- end
-end
-```
-
-**Note that, unlike Gaussian, the atom numbering in ORCA starts from zero. So the first atom is zero. You must take this into account when setting up the scan.**
-
-**For the ORCA runs, you should employ tight convergence criteria for the geometrical optimization by using the `TightOpt` keyword.**
-
-ORCA has various options to improve the performance, see [tutorial](https://www.faccts.de/docs/orca/6.0/tutorials/prop/single_point.html). You should make use of them in your calculations. For example, for the `RIJCOSX` option for hybrid functionals:
-```
-! B3LYP cc-pVDZ cc-pVDZ/J RIJCOSX
-```
-or `RI-MP2` for better performance for MP2 calculations:
-```
-! RI-MP2 cc-pVDZ cc-pVDZ/C
-```
-where in both cases, you must specify an auxiliary  basis set. 
+where you must specify an auxiliary basis set by using the `cc-pVDZ/C` (this should be the same as normal basis set specficed, such that if you are using cc-pVTZ, you should use `cc-pVTZ cc-pVTZ/C`
 
 
 
