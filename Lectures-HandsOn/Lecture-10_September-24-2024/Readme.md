@@ -1,40 +1,55 @@
-# Lecture 9 - Continuing Assignment 2
+# Lecture 10 - Vibrational Frequency Calculations 
 
-September 19, 2024 
+September 24, 2024 
 
-In today's lecture, you should continue working on Assignment 2 
+In today's hands-on, we are going to set up frequency calculations for [Ethylene](https://pubchem.ncbi.nlm.nih.gov/compound/Ethylene), both for Gaussian and ORCA
 
-### Extracting the relaxed surface scan results from Gaussian
+### Relaxed surface scan using ORCA 
 
-To extract the results of the relaxed surface scan from Gaussian, you should open the `<FILENAME>.log` using GaussView, and select the Results=>Scan option in the menubar. This will open an window with the results. Here, you can manipulate the date, for example aligning the lowest energy point to zero and changing units. You can then save the data to a text file that you can use for plotting in another program. This will be shown in class. 
+First, one comment concerning Assignment 2. 
 
-### Extracting the relaxed surface scan results from ORCA 
+If you are using ORCA for a relaxed scan, you can look at the trajectory for the series of geometrical optization by opening the `<FILENAME>_trj.xyz`, for example using `molden`
 
-It is much easier to extract the results with ORCA as the code will give out a data file in a text format called `<FILENAME>.relaxscanact.dat` with the results. You can then take this data file and plot the results in another code. 
-
-**Note, please make sure that you use the `<FILENAME>.relaxscanact.dat` for the analysis as this data file includes the actual energies.** 
-
-There is also another file (`<FILENAME>.relaxscanscf.dat`) that contains the pure SCF energy. For HF and DFT without dispersion correction, these two files are the same, but for DFT with dispersion correction and post-HF methods such as MP2, the energies will be different. 
-
-### Plotting the results 
-
-To plot the scan results, you can use whatever software you prefer. One option is to use Python with Numpy and Matplotlib, and I have prepared a [Juypter Notebook](https://colab.research.google.com/github/valsson-group/UNT-Chem5660-Fall2024/blob/main/Python-PlotDihedralData/PlotDihedralData.ipynb) that shows how you can do that. I will do a demonstration in class on how to use this notebook. 
-
-Whatever software you use to make the figures, you must ensure that:
-- That the lowest energy point of each calculation setup is aligned to be at zero
-- That the energy value are given in kJ/mol or kcal/mol, based on your preference
-- The x- and y-axis are appropriately labeled
-- The x- and y-axis have the appropriate units
-- That each line has a different color and is labelled in a legend 
-
-### Performing a relaxed surface scan using MP2 in ORCA 
-
-ORCA has various options to improve the performance, see [tutorial](https://www.faccts.de/docs/orca/6.0/tutorials/prop/single_point.html). For MP2 calculations, you should make use of the resolution of the identity (RI) approximation that can significantly speed-up the calculations without a loss in accuracy. To active this approxiartion, you must use the `RI-MP2`
 ```
-! RI-MP2 cc-pVDZ cc-pVDZ/C OPT TightOPT
+molden Benzamidine_Scan_BLYP_cc-pVDZ_trj.xyz
 ```
-where you must specify an auxiliary basis set by using the `cc-pVDZ/C` (this should be the same as normal basis set specficed, such that if you are using cc-pVTZ, you should use `cc-pVTZ cc-pVTZ/C`
 
+This can be useful if you are having problems with your calculation, for example, if the relaxed scan crashes or the results look weird. By looking at the trajectory in this file, you can see if the relaxed scan is being done for the right atoms. 
+
+### Vibrational Frequency Calculations for Ethylene
+
+You should set up vibrational frequency calculations for Ethylene, both using Gaussian and ORCA. 
+
+It would be best if you did not use GaussView to set up the calculations, only a text editor on cruntch4. 
+
+Use the initial geometry that is available on cruntch4 at the following path:
+```
+/storage/nas_scr/shared/groups/compchem-chem5600/Lectures-2024/Lecture-10_Sept-24-2024/Ethylene-Initial-MMFF94.xyz
+```
+
+You should use the B3LYP-D3 with the cc-pVDZ basis set for the calculations.
+
+You should perform a geometrical optimization followed by a vibrational frequency calculation at the ground state minimum. The relevant keywords are:
+- Gaussian: `OPT(Tight) FREQ`
+- ORCA: `OPT FREQ TIGHTOPT` 
+
+For the Gaussian calculation, you can open the log file (or checkpoint file) using GaussView and visualize the normal modes, and obtain the IR spectrum (which can be output to a file). This will be shown in class. 
+
+For the ORCA calculations, you can open the output file with ChimeraX or Avagadro and visualize the normal modes, and obtain the IR spectrum. This will be shown in class. For ORCA.
+
+### Obtaining IR spectrum from ORCA calculations 
+
+For ORCA, you can also obtain the IR spectrum using the `orca_mapspc` command line tool; see ORCA [manual](https://www.faccts.de/docs/orca/6.0/manual/contents/typical/properties.html#ir-raman-spectra-vibrational-modes-and-isotope-shifts)
+
+To be able to use the `orca_mapspc` tool, you must load the `ORCA/6.0.0_avx2` module on cruntch4:
+```
+module load ORCA/6.0.0_avx2
+```
+Then you use it in the following way:
+```
+orca_mapspc <FILENAME>.out ir -w25
+```
+Where `-w25` is a linewidth parameter that controls the broadening of each peak (done with a Gaussian kernel). This will result in a data file with the filename `<FILENAME>.out.ir.dat` that you can plot. By default, the spectrum will be in inverse centimeters and will be given in terms of transmittance. 
 
 
 
