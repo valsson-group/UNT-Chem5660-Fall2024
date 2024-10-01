@@ -1,43 +1,45 @@
-# Lecture 12 - Vibrational Frequency Calculations 
+# Lecture 12 - Assignment 3
 
-September 24, 2024 
+October 1, 2024 
 
-In today's hands-on, we are going to set up frequency calculations for [Ethylene](https://pubchem.ncbi.nlm.nih.gov/compound/Ethylene), both for Gaussian and ORCA
+You should start working on Assignment 3
 
-### Relaxed surface scan using ORCA 
+### Files for Assignment 3
 
-First, one comment concerning Assignment 2. 
-
-If you are using ORCA for a relaxed scan, you can look at the trajectory for the series of geometrical optization by opening the `<FILENAME>_trj.xyz`, for example using `molden`
-
+All the files needed for Assignment 3 can be found in the following shared folder on cruntch4:
 ```
-molden Benzamidine_Scan_BLYP_cc-pVDZ_trj.xyz
+/storage/nas_scr/shared/groups/compchem-chem5600/Assignments/Assignment-3-Azobenzene
 ```
+This includes:
+- `azobenzene_cis.xyz` -  An initial geometry for the cis isomers
+- `azobenzene_trans.xyz` – An initial geometry for the trans isomers
+- `azobenzene_ir-spectra_gas-phase.dat` – Experimental absorbance IR spectra in the gas-phase given in units of inverse cm.
 
-This can be useful if you are having problems with your calculation, for example, if the relaxed scan crashes or the results look weird. By looking at the trajectory in this file, you can see if the relaxed scan is being done for the right atoms. 
+### Vibrational Frequency Calculations 
 
-### Vibrational Frequency Calculations for Ethylene
-
-You should set up vibrational frequency calculations for Ethylene, both using Gaussian and ORCA. 
-
-It would be best if you did not use GaussView to set up the calculations, only a text editor on cruntch4. 
-
-Use the initial geometry that is available on cruntch4 at the following path:
-```
-/storage/nas_scr/shared/groups/compchem-chem5600/Lectures-2024/Lecture-10_Sept-24-2024/Ethylene-Initial-MMFF94.xyz
-```
-
-You should use the B3LYP-D3 with the cc-pVDZ basis set for the calculations.
-
-You should perform a geometrical optimization followed by a vibrational frequency calculation at the ground state minimum. The relevant keywords are:
+You can perform the geometrical optimization and the vibrational frequency calculation in the same calculation using the following keywords:
 - Gaussian: `OPT(Tight) FREQ`
-- ORCA: `OPT FREQ TIGHTOPT` 
+- ORCA: `OPT FREQ TIGHTOPT`
+This will perform a geometrical optimization followed by a vibrational frequency calculation at the ground state minimum.
 
-For the Gaussian calculation, you can open the log file (or checkpoint file) using GaussView and visualize the normal modes, and obtain the IR spectrum (which can be output to a file). This will be shown in class. 
 
-For the ORCA calculations, you can open the output file with ChimeraX or Avagadro and visualize the normal modes, and obtain the IR spectrum. This will be shown in class. For ORCA.
+### Thermochemistry Calculation - Temperature  
+
+When you perform vibrational frequency calculations in ORCA or Gaussian, the code automatically calculates all the quantities needed for the thermochemistry analysis. By default, the calculations consider a temperature of 298.15 K and pressure of 1 atm. Thus, if you want to obtain thermochemistry at a different thermodynamic condition, you will need to specify that in the input file. 
+
+You can see further information about this in the manuals:
+- ORCA: `https://www.faccts.de/docs/orca/6.0/manual/contents/typical/properties.html#thermochemistry`
+- Gaussian: `https://gaussian.com/temp/`
+
+ORCA allows you to obtain the thermochemistry quantities at different temperatures and pressures in the same calculation. You can also obtain the thermochemistry quantities at different temperatures in post-processing without re-doing the vibrational frequency calculation, see manual. 
+
+### Obtaining IR spectrum from Gaussian calculations 
+
+For the Gaussian calculation, you can open the log file (or checkpoint file) using GaussView and visualize the normal modes, and obtain the IR spectrum (which can be output to a file). This was shown in class in Lecture 10. 
 
 ### Obtaining IR spectrum from ORCA calculations 
+
+For the ORCA calculations, you can open the output file with ChimeraX or Avagadro and visualize the normal modes, and obtain the IR spectrum. This was shown in class in Lecture 10.
 
 For ORCA, you can also obtain the IR spectrum using the `orca_mapspc` command line tool; see ORCA [manual](https://www.faccts.de/docs/orca/6.0/manual/contents/typical/properties.html#ir-raman-spectra-vibrational-modes-and-isotope-shifts)
 
@@ -50,6 +52,14 @@ Then you use it in the following way:
 orca_mapspc <FILENAME>.out ir -w25
 ```
 Where `-w25` is a linewidth parameter that controls the broadening of each peak (done with a Gaussian kernel). This will result in a data file with the filename `<FILENAME>.out.ir.dat` that you can plot. By default, the spectrum will be in inverse centimeters and will be given in terms of transmittance. 
+
+If you want to scale the IR spectra with a scaling factor as often is done to obtain a better agreement with experiments, you can use the `-fac<SCALING-FACTOR>` flag where `<SCALING-FACTOR>` is the numerical value used for the scaling
+```
+orca_mapspc <FILENAME>.out ir -w25 -fac<SCALING-FACTOR>
+```
+Note that there should be no space between the `-fac` flag and the numerical value
+
+
 
 
 
