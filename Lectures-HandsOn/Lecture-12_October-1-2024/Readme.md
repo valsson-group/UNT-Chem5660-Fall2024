@@ -13,7 +13,7 @@ All the files needed for Assignment 3 can be found in the following shared folde
 This includes:
 - `azobenzene_cis.xyz` -  An initial geometry for the cis isomers
 - `azobenzene_trans.xyz` – An initial geometry for the trans isomers
-- `azobenzene_ir-spectra_gas-phase.dat` – Experimental absorbance IR spectra in the gas-phase given in units of inverse cm.
+- `azobenzene_ir-spectra_gas-phase.dat` – Experimental absorbance IR spectrum in the gas-phase given in units of inverse cm.
 
 ### Vibrational Frequency Calculations 
 
@@ -58,6 +58,41 @@ If you want to scale the IR spectra with a scaling factor as often is done to ob
 orca_mapspc <FILENAME>.out ir -w25 -fac<SCALING-FACTOR>
 ```
 Note that there should be no space between the `-fac` flag and the numerical value
+
+### Comparing Experimental and Calculated IR Spectrum
+
+The calculated IR spectrum from ORCA is given in terms of transmittance, while the experimental spectrum can be given in terms of absorbance, as in the current case for Azobenzene. Therefore, to be able to compare both spectra on the same plot, we will need to do some manipulation. I have created a Jupyter notebook that uses Python (Numpy) to do this:
+
+- [IR Spectrum - Manipulation of Data and Plotting It Using Using Python](https://colab.research.google.com/github/valsson-group/UNT-Chem5660-Fall2024/blob/main/Python-Plot-IR-Spectrum/Plot_IR_Spectra.ipynb)
+
+The link is also on the course Canvas page. If time permits, I will go over this notebook in class. Otherwise, I will do that in Lecture 13 on Thursday. 
+
+### Converting ORCA Spectrum from Transmittance to Absorbance using awk
+
+As discussed in the notebook, we can also use the `awk` command line tool to convert the ORCA spectrum from transmittance to absorbance
+```
+awk '{printf "%24.12f  %24.12f\n",$1,1000.0-$2}' <FILENAME>.out.ir.dat > <FILENAME>.out.ir.absorbance.dat
+```
+Then, you can directly compare the two. 
+
+See further information about `awk` at the following links:
+- https://developer.ibm.com/tutorials/l-awk1/
+- https://www.redhat.com/sysadmin/beginners-guide-gawk
+
+### Extracting Thermochemistry Quantities from ORCA Calculations 
+
+You can use a Python script to extract all the thermochemistry quantities from ORCA calculations to a CSV (comma separated values) file that you can open in Excel or other spreadsheet program.  
+
+This script is available at 
+```
+/storage/nas_scr/shared/groups/compchem-chem5600/scripts/ORCA_Thermochem_extractor.py
+```
+You just need to run with this whole path, and the script will go over all the ORCA output files in a current folder and extract all the relevant values to a CSV file called `Thermo_data.csv` that will look something like this:
+```
+Filename,Imaginary Frequencies,Electronic energy,ZPE Corr,Thermal Corr,H corr,G corr,ZPE Energy,Thermal Energy,Enthalpy,Entropy,Gibbs
+Ethylene_Freq_B3LYP-D3_cc-pvdz_ORCA.out,0.000000,-78.537064,0.050670,0.003050,0.000944,0.029779,-78.486393,12345.000000,-78.482399,0.024886,-78.507285
+```
+
 
 
 
