@@ -1,55 +1,76 @@
-# Lecture 12 - Vibrational Frequency Calculations 
+# Lecture 12 - Assignment 3 Continued 
 
-September 24, 2024 
+October 3, 2024 
 
-In today's hands-on, we are going to set up frequency calculations for [Ethylene](https://pubchem.ncbi.nlm.nih.gov/compound/Ethylene), both for Gaussian and ORCA
+In today's hands-on, you should continue working on Assignment 3. 
 
-### Relaxed surface scan using ORCA 
+Here, I only list information related to Assignment 3 about the implicit solvent models, please [Lecture 12](https://github.com/valsson-group/UNT-Chem5660-Fall2024/tree/main/Lectures-HandsOn/Lecture-12_October-1-2024) for further information. 
 
-First, one comment concerning Assignment 2. 
+### Obtaining IR spectrum from ORCA calculations - Note Concerning File Management 
 
-If you are using ORCA for a relaxed scan, you can look at the trajectory for the series of geometrical optization by opening the `<FILENAME>_trj.xyz`, for example using `molden`
-
-```
-molden Benzamidine_Scan_BLYP_cc-pVDZ_trj.xyz
-```
-
-This can be useful if you are having problems with your calculation, for example, if the relaxed scan crashes or the results look weird. By looking at the trajectory in this file, you can see if the relaxed scan is being done for the right atoms. 
-
-### Vibrational Frequency Calculations for Ethylene
-
-You should set up vibrational frequency calculations for Ethylene, both using Gaussian and ORCA. 
-
-It would be best if you did not use GaussView to set up the calculations, only a text editor on cruntch4. 
-
-Use the initial geometry that is available on cruntch4 at the following path:
-```
-/storage/nas_scr/shared/groups/compchem-chem5600/Lectures-2024/Lecture-10_Sept-24-2024/Ethylene-Initial-MMFF94.xyz
-```
-
-You should use the B3LYP-D3 with the cc-pVDZ basis set for the calculations.
-
-You should perform a geometrical optimization followed by a vibrational frequency calculation at the ground state minimum. The relevant keywords are:
-- Gaussian: `OPT(Tight) FREQ`
-- ORCA: `OPT FREQ TIGHTOPT` 
-
-For the Gaussian calculation, you can open the log file (or checkpoint file) using GaussView and visualize the normal modes, and obtain the IR spectrum (which can be output to a file). This will be shown in class. 
-
-For the ORCA calculations, you can open the output file with ChimeraX or Avagadro and visualize the normal modes, and obtain the IR spectrum. This will be shown in class. For ORCA.
-
-### Obtaining IR spectrum from ORCA calculations 
-
-For ORCA, you can also obtain the IR spectrum using the `orca_mapspc` command line tool; see ORCA [manual](https://www.faccts.de/docs/orca/6.0/manual/contents/typical/properties.html#ir-raman-spectra-vibrational-modes-and-isotope-shifts)
+As discussed in last lecture, we can use the `orca_mapspc` command line tool to obtain the IR spectrum from ORCA calculations. One can also scale the frequencies using the appropriate scaling factor for the  level of theory you are using. 
 
 To be able to use the `orca_mapspc` tool, you must load the `ORCA/6.0.0_avx2` module on cruntch4:
 ```
 module load ORCA/6.0.0_avx2
 ```
-Then you use it in the following way:
+Then you can use it in the following way (for an unscaled spectrum)
 ```
 orca_mapspc <FILENAME>.out ir -w25
 ```
-Where `-w25` is a linewidth parameter that controls the broadening of each peak (done with a Gaussian kernel). This will result in a data file with the filename `<FILENAME>.out.ir.dat` that you can plot. By default, the spectrum will be in inverse centimeters and will be given in terms of transmittance. 
+or for the scaled spectrum with some given scaling factor
+```
+orca_mapspc <FILENAME>.out ir -w25 -fac<SCALING-FACTOR>
+```
+Note that there should be no space between the `-fac` flag and the numerical value.
+
+Running the `orca_mapspc` will result in a data file with the filename `<FILENAME>.out.ir.dat` that you can plot. 
+
+Every time you run the `orca_mapspc` command, it will write over the `<FILENAME>.out.ir.dat`. Thus, if you want to obtain both an unscaled and a scaled spectrum from the same ORCA output file, you need to rename or copy the files, for example you can do the following:
+
+```
+# run for the un-scaled spectrum
+orca_mapspc <FILENAME>.out ir -w25
+
+# rename or copy the un-scaled spectrum
+cp <FILENAME>.out.ir.dat <FILENAME>.out.ir.no-scaling.dat
+
+# run for the scaled spectrum with some scaling factor 
+orca_mapspc <FILENAME>.out ir -w25 -fac<SCALING-FACTOR>
+
+# rename or copy the ucaled spectrum
+cp <FILENAME>.out.ir.dat <FILENAME>.out.ir.with-scaling.dat
+```
+as before `<...>` values are part where you should replace with the appropriate values for your case. 
+
+### Implicit Solvent Models
+
+As discussed in the lecture, you should add the following keywords to perform your calculations using implicit solvent models.
+
+#### ORCA 6 
+
+- CPCM solvent model: `CPCM(<SOLVENT-NAME>)`
+- SMD solvent model: `SMD(<SOLVENT-NAME>)`     
+
+where `<SOLVENT-NAME>` is one of the solvents listed in [Table 7.27](https://www.faccts.de/docs/orca/6.0/manual/contents/detailed/solvationmodels.html#table-list-solvents) in the ORCA manual.   
+**Note that the solvent name might differ from what you are used to or written in an assignment.**
+
+See [ORCA 6 manual](https://www.faccts.de/docs/orca/6.0/manual/contents/detailed/solvationmodels.html) for further information, and more advanced options. 
+
+Furthermore, this ORCA 6 tutorial should provide useful: [Implicit Solvation Models](https://www.faccts.de/docs/orca/6.0/tutorials/prop/cpcm.html).
+
+#### Gaussian 16
+
+- PCM solvent model: `SCRF=(PCM,Solvent=<SOLVENT-NAME>)`
+- CPCM solvent model: `SCRF=(CPCM,Solvent=<SOLVENT-NAME>)`
+- SMD solvent model: `SCRF=(SMD,Solvent=<SOLVENT-NAME>)`
+
+where `<SOLVENT-NAME>` is one of the solvents listed in the Gaussian manual page for the [SCRF](https://gaussian.com/scrf/) keyword.   
+**Note that the solvent name might differ from what you are used to or written in an assignment.**
+
+See manual for the [SCRF](https://gaussian.com/scrf/) keyword for further information. 
+
+
 
 
 
